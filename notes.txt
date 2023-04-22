@@ -1,0 +1,24 @@
+Command Line:
+   pip install Django
+   pip install channels==3.0.4
+   pip install channels-redis
+   sudo apt install redis-server
+
+   sudo service redis-server stop
+   redis-server
+   ./manage.py runserver
+
+
+Files of Interest:
+   settings.py
+
+   realtime_graph/urls.py
+   graph/urls.py
+   views.py
+
+   asgi.py
+   routing.py
+   consumers.py
+
+   main.js
+   base.html
