@@ -4,7 +4,6 @@ const ctx = document.getElementById('myChart');
 var graphData = {
 type: 'scatter',
 data: {
-//  labels: ['jan', 'feb', 'mar', 'apr', 'may', 'jun'],
   datasets: [
       {
         label: 'MCU',
@@ -50,11 +49,14 @@ data: {
 },
 options: {
     animation: false,
+	interaction: {
+		mode: 'nearest',
+		intersect: false,
+	},
     scales: {
         x: {
             type: 'time',
             time: {
-//                parser: 'yyyy-MM-ddTHH:mm:ss.SSSSSS',
                 unit: 'second',
                 displayFormats: {
                     second: 'HH:mm:ss',
@@ -63,7 +65,11 @@ options: {
             title:{
                 display: true,
                 text: 'Time'
-            }
+            },
+			ticks: {
+				autoSkip: false,
+				stepSize: 5,
+			}
         },
         y: {
             type: 'linear',
@@ -106,16 +112,23 @@ var myChart = new Chart(ctx, graphData);
 var socket = new WebSocket('ws://localhost:8000/ws/graph/')
 
 var panCounter = 0;
+var mcuDataMessage = null;
+var plcDataMessage = null;
 
 socket.onmessage = function(e){
     var djangoData = JSON.parse(e.data);
 
-//    var date = new Date(djangoData.time);
-
-//    console.log(date.valueOf());
-//    console.log(djangoData.time);
-
     if (djangoData.id == "MCU") {
+		mcuDataMessage = djangoData;
+    } else {
+		plcDataMessage = djangoData;
+    }
+};
+
+setInterval(function() {
+    console.log(socket.bufferedAmount);
+
+    if (mcuDataMessage != null) {
         var newGraphData = graphData.data.datasets[0].data;
 
         if (panCounter > 1000) {
@@ -124,10 +137,14 @@ socket.onmessage = function(e){
             panCounter++;
         }
 
-        newGraphData.push({x: djangoData.time, y: djangoData.value});
+        newGraphData.push({x: mcuDataMessage.time, y: mcuDataMessage.value});
 
         graphData.data.datasets[0].data = newGraphData;
-    } else {
+
+		mcuDataMessage = null;
+    } 
+	
+	if (plcDataMessage != null) {
         var newGraphData = graphData.data.datasets[1].data;
         var newGraphData2 = graphData.data.datasets[2].data;
 
@@ -138,28 +155,18 @@ socket.onmessage = function(e){
             panCounter++;
         }
 
-        newGraphData.push({x: djangoData.time, y: djangoData.value});
-        newGraphData2.push({x: djangoData.time, y: djangoData.force});
+        newGraphData.push({x: plcDataMessage.time, y: plcDataMessage.value});
+        newGraphData2.push({x: plcDataMessage.time, y: plcDataMessage.force});
 
         graphData.data.datasets[1].data = newGraphData;
         graphData.data.datasets[2].data = newGraphData2;
+
+		plcDataMessage = null;
     }
 
-
-//    var newGraphData = graphData.data.datasets[0].data;
-//    newGraphData.shift();
-//    newGraphData.push(djangoData.value);
-//
-//    graphData.data.datasets[0].data = newGraphData;
     myChart.update();
 
-//    document.querySelector('#app').innerText = djangoData.value;
-};
-
-setInterval(function() {
-    socket.send(JSON.stringify({"signal": "heartbeat"}));
-    console.log(socket.bufferedAmount);
-}, 1000);
+}, 10);
 
 socket.onopen = function(e) {
 //  alert("[open] Connection established");
