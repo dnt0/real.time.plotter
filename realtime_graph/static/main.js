@@ -68,8 +68,12 @@ options: {
             },
 			ticks: {
 				autoSkip: false,
-				// stepSize: 5,
+				minRotation: 30,
 				callback: function(value, index, values) {
+					if (index <= 1) {
+						return null;
+					}
+
 					var dateTime = new Date(value);
 					var dateTimeString = ("0" + dateTime.getHours().toString()).slice(-2) + "." +
 										 ("0" + dateTime.getMinutes().toString()).slice(-2) + ":" +
@@ -133,7 +137,7 @@ socket.onmessage = function(e){
 };
 
 setInterval(function() {
-    console.log(socket.bufferedAmount);
+    // console.log(socket.bufferedAmount);
 
     if (mcuDataMessage != null) {
         var newGraphData = graphData.data.datasets[0].data;
