@@ -8,7 +8,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from datetime import datetime, timedelta
-from .command_interface import CommandInterface
+# from .command_interface import CommandInterface
 
 def run_periodic_task_MCU():
     channel_layer = get_channel_layer()

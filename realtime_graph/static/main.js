@@ -68,7 +68,14 @@ options: {
             },
 			ticks: {
 				autoSkip: false,
-				stepSize: 5,
+				// stepSize: 5,
+				callback: function(value, index, values) {
+					var dateTime = new Date(value);
+					var dateTimeString = ("0" + dateTime.getHours().toString()).slice(-2) + "." +
+										 ("0" + dateTime.getMinutes().toString()).slice(-2) + ":" +
+										 ("0" + dateTime.getSeconds().toString()).slice(-2) + ".";
+					return dateTime.getSeconds() % 5 == 0 ? dateTimeString : null;
+				},
 			}
         },
         y: {
