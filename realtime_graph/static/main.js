@@ -73,7 +73,7 @@ options: {
 					var dateTime = new Date(value);
 					var dateTimeString = ("0" + dateTime.getHours().toString()).slice(-2) + "." +
 										 ("0" + dateTime.getMinutes().toString()).slice(-2) + ":" +
-										 ("0" + dateTime.getSeconds().toString()).slice(-2) + ".";
+										 ("0" + dateTime.getSeconds().toString()).slice(-2);
 					return dateTime.getSeconds() % 5 == 0 ? dateTimeString : null;
 				},
 			}
